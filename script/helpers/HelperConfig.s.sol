@@ -19,17 +19,21 @@ contract HelperConfig is Script {
     struct NetworkConfig {
         address admin;
         address multisig;
-        address protocolYouAreIntegrating;
-        address chainlinkRouter;
-        uint256 etc;
-        bytes32 etcEtc;
+        VRFVariables vrf;
+    }
+
+    struct VRFVariables{
+        address coordinator;
+        uint32 callbackGasLimit;
+        uint32 numWords;
+        bytes32 keyHash;
+        uint256 subscriptionId;
     }
 
     ///@notice Magic Number Removal
     uint256 constant LOCAL_CHAIN_ID = 31337;
     ///@notice Update with the chains you plan to use
-    uint256 constant BASE_SEPOLIA_CHAIN_ID = 84532;
-    uint256 constant BASE_MAINNET_CHAIN_ID = 8453;
+    uint256 constant SEPOLIA_CHAIN_ID = 11155111;
 
     ///@notice Local network state variables
     NetworkConfig public s_localNetworkConfig;
@@ -47,8 +51,7 @@ contract HelperConfig is Script {
     //////////////////////////////////////////////////////////////*/
     constructor() {
         ///@notice initialize Testnet/Mainnet only
-        s_networkConfigs[BASE_SEPOLIA_CHAIN_ID] = getSepoliaBaseConfig();
-        s_networkConfigs[BASE_MAINNET_CHAIN_ID] = getMainnetBaseConfig();
+        s_networkConfigs[SEPOLIA_CHAIN_ID] = getSepoliaConfig();
     }
 
     /**
@@ -74,7 +77,7 @@ contract HelperConfig is Script {
         if (_chainId != LOCAL_CHAIN_ID) {
             return s_networkConfigs[_chainId];
             ///@notice check for a specific part of your protocol that will not break the rest of the conditionals
-        } else if(s_networkConfigs[_chainId].chainlinkRouter != address(0)) {
+        } else if(s_networkConfigs[_chainId].vrf.subscriptionId != 0) {
             return s_networkConfigs[_chainId];
         } else if (_chainId == LOCAL_CHAIN_ID) {
             return getOrCreateAnvilEthConfig();
@@ -83,33 +86,28 @@ contract HelperConfig is Script {
         }
     }
 
-    function getMainnetBaseConfig() public view returns (NetworkConfig memory mainnetNetworkConfig) {
-        ///@notice update the values with the real values from the main network
-        mainnetNetworkConfig = NetworkConfig({
-            ///@notice vm.envAddress("NAME_OF_THE_VARIABLE_ON_.ENV_FILE")
-            admin: vm.envAddress("ADMIN_TESTNET_PUBLIC_KEY"),
-            multisig: address(0),
-            protocolYouAreIntegrating:  address(0),
-            chainlinkRouter:  address(0),
-            etc: 0,
-            etcEtc: 0
+    function getSepoliaConfig() public view returns (NetworkConfig memory sepoliaNetworkConfig) {
+        
+        VRFVariables memory vrf = VRFVariables({
+            coordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
+            callbackGasLimit: 100_000,
+            numWords: 1,
+            keyHash: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae,
+            subscriptionId: 58086061567021059456155470586811951315166220923014065007102875737901351044149
         });
-    }
-
-    function getSepoliaBaseConfig() public view returns (NetworkConfig memory sepoliaNetworkConfig) {
+        
         ///@notice update the values with the real values from the test network
         sepoliaNetworkConfig = NetworkConfig({
             ///@notice vm.envAddress("NAME_OF_THE_VARIABLE_ON_.ENV_FILE")
             admin: vm.envAddress("ADMIN_TESTNET_PUBLIC_KEY"),
             multisig: address(0),
-            protocolYouAreIntegrating:  address(0),
-            chainlinkRouter:  address(0),
-            etc: 0,
-            etcEtc: 0
+            vrf: vrf
         });
     }
 
     function getOrCreateAnvilEthConfig() public returns (NetworkConfig memory) {
+        ///@notice deploy mocks and update the variable below
+        VRFVariables memory vrf;
 
         ///@notice deploy mocks, if need. Like: Chainlink Routers, Feeds, etc.
         ///@notice add the deployed mock on the above config before calling it.
@@ -117,11 +115,7 @@ contract HelperConfig is Script {
             ///@notice you can create address like this, on you testing. So you can use this params
             admin: address(77),
             multisig: address(777),
-            ///@notice here, you will probable need to deploy the mock for this guys. So, you will do it before calling this
-            protocolYouAreIntegrating:  address(0),
-            chainlinkRouter:  address(0),
-            etc: 0,
-            etcEtc: 0
+            vrf: vrf
         });
 
         return s_localNetworkConfig;

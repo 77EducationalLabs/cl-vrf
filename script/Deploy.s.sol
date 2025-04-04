@@ -8,6 +8,7 @@ import { Script, console } from "forge-std/Script.sol";
 import { HelperConfig } from "script/helpers/HelperConfig.s.sol";
 
 ///@notice Contracts to be deployed
+import { CLVRFExample } from "src/CLVRFExample.sol";
 
 /**
     *@title Core Deploy Script
@@ -22,11 +23,26 @@ contract DeployScript is Script {
         *@notice So, you will need to update the signature to call on the CLI
     */
     function run() external returns(HelperConfig helperConfig_){
+        CLVRFExample chainlinkVRF;
+
+        console.log("Deploying HelperConfig");
+        helperConfig_ = new HelperConfig();
+        console.log("Query Chain Configs");
+        HelperConfig.NetworkConfig memory config = helperConfig_.getConfig();
+        console.log("Get Chainlink Specific Variables");
+        HelperConfig.VRFVariables memory vrf = config.vrf;
         
         ///@notice foundry tool to deploy the contract
         vm.startBroadcast();
         
-        helperConfig_ = new HelperConfig();
+        console.log("Deploy Chainlink VRF Example");
+        chainlinkVRF = new CLVRFExample(
+            vrf.coordinator,
+            vrf.callbackGasLimit,
+            vrf.numWords,
+            vrf.keyHash,
+            vrf.subscriptionId
+        );
 
         vm.stopBroadcast();
 

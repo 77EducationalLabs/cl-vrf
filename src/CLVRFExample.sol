@@ -49,8 +49,6 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
     /*///////////////////////////////////
                 Variables
     ///////////////////////////////////*/
-    ///@notice immutable variable to store the number of confirmations need before a request can be fulfilled
-    uint16 immutable i_requestConfirmations;
     ///@notice immutable variable to store the amount of gas allowed to be consumed to complete a request
     uint32 immutable i_callbackGasLimit;
     ///@notice variable to store the number of random number per request
@@ -60,6 +58,8 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
     ///@notice variable to store the subscription ID to be used by the protocol.
     uint256 immutable i_subscriptionId;
 
+    ///@notice constant variable to store the number of confirmations need before a request can be fulfilled
+    uint16 immutable REQUEST_CONFIRMATIONS = 3;
     ///@notice constant variable to remove magic numbers
     uint256 constant TICKET_PRICE = 1*10**16;
     uint256 constant ONE = 1;
@@ -109,8 +109,17 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
                 constructor
     ///////////////////////////////////*/
     constructor(
-        address _vrfCoordinator
-    ) VRFConsumerBaseV2Plus(_vrfCoordinator){}
+        address _vrfCoordinator,
+        uint32 _gasLimit,
+        uint32 _numWords,
+        bytes32 _keyHash,
+        uint256 _subId
+    ) VRFConsumerBaseV2Plus(_vrfCoordinator){
+        i_callbackGasLimit = _gasLimit;
+        i_numWords = _numWords;
+        i_keyHash = _keyHash;
+        i_subscriptionId = _subId;
+    }
 
     /*///////////////////////////////////
             Receive&Fallback
@@ -151,7 +160,7 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
             VRFV2PlusClient.RandomWordsRequest({
                 keyHash: i_keyHash,
                 subId: i_subscriptionId,
-                requestConfirmations: i_requestConfirmations,
+                requestConfirmations: REQUEST_CONFIRMATIONS,
                 callbackGasLimit: i_callbackGasLimit,
                 numWords: i_numWords,
                 extraArgs: VRFV2PlusClient._argsToBytes(
@@ -191,6 +200,7 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
         uint256 numberSelected = request.randomWord % s_ticketsSold.length;
         address winnerSelected = s_ticketsSold[numberSelected];
 
+        s_requests[_requestId].winnerSelected = true;
         s_requests[_requestId].winner = winnerSelected;
         s_requests[_requestId].prizeAmount = address(this).balance;
         delete s_ticketsSold;
