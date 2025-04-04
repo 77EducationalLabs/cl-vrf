@@ -39,7 +39,6 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
     struct RequestStatus {
         bool fulfilled;
         bool exists;
-        bool winnerSelected;
         uint256 randomWord;
         uint256 prizeAmount;
         address winner;
@@ -176,7 +175,6 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
         s_requests[requestId_] = RequestStatus({
             fulfilled: false,
             exists: true,
-            winnerSelected: false,
             randomWord: 0,
             prizeAmount: 0,
             winner: address(0)
@@ -195,12 +193,11 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
         RequestStatus memory request = s_requests[_requestId];
         if(!request.exists) revert CLVRFExample_InvalidRequestId(_requestId);
         if(!request.fulfilled) revert CLVRFExample_RequestNotFulfilled(_requestId);
-        if(request.winnerSelected) revert CLVRFExample_WinnerAlreadySelected(_requestId, request.winner);
+        if(request.winner == address(0)) revert CLVRFExample_WinnerAlreadySelected(_requestId, request.winner);
 
         uint256 numberSelected = request.randomWord % s_ticketsSold.length;
         address winnerSelected = s_ticketsSold[numberSelected];
 
-        s_requests[_requestId].winnerSelected = true;
         s_requests[_requestId].winner = winnerSelected;
         s_requests[_requestId].prizeAmount = address(this).balance;
         delete s_ticketsSold;
@@ -216,7 +213,7 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
     */
     function winnerWithdraw(uint256 _requestId) external {
         RequestStatus memory request = s_requests[_requestId];
-        if(!request.winnerSelected) revert CLVRFExample_WinnerNotSelectedYet(_requestId, request.winner);
+        if(request.winner == address(0)) revert CLVRFExample_WinnerNotSelectedYet(_requestId, request.winner);
         if(request.prizeAmount == 0) revert CLVRFExample_PrizeAlreadyPaid(_requestId);
 
         s_requests[_requestId].prizeAmount = 0;
