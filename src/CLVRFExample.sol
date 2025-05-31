@@ -50,14 +50,14 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
     ///////////////////////////////////*/
     ///@notice immutable variable to store the amount of gas allowed to be consumed to complete a request
     uint32 immutable i_callbackGasLimit;
-    ///@notice variable to store the number of random number per request
+    ///@notice variable to store the number of random numbers per request
     uint32 immutable i_numWords;
     ///@notice variable to store the gas lane to use, which specifies the maximum gas price to bump to.
     bytes32 immutable i_keyHash;
     ///@notice variable to store the subscription ID to be used by the protocol.
     uint256 immutable i_subscriptionId;
 
-    ///@notice constant variable to store the number of confirmations need before a request can be fulfilled
+    ///@notice constant variable to store the number of confirmations needed before a request can be fulfilled
     uint16 immutable REQUEST_CONFIRMATIONS = 3;
     ///@notice constant variable to remove magic numbers
     uint256 constant TICKET_PRICE = 1*10**16;
@@ -79,7 +79,7 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
     /*///////////////////////////////////
                 Errors
     ///////////////////////////////////*/
-    ///@notice error emitted when a VRF Request Id is invalid
+    ///@notice error emitted when a VRF Request ID is invalid
     error CLVRFExample_InvalidRequestId(uint256 requestId);
     ///@notice error emitted when the amount of ether sent to the contract is incorrect
     error CLVRFExample_InvalidAmount(uint256 amountSent, uint256 amountExpected);
@@ -87,13 +87,13 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
     error CLVRFExample_RequestNotFulfilled(uint256 requestId);
     ///@notice error emitted when drawWinner is called for an already fulfilled requestId
     error CLVRFExample_WinnerAlreadySelected(uint256 requestId, address winner);
-    ///@notice error emitted when an user tries to buy a ticket while a draw happens
+    ///@notice error emitted when a user tries to buy a ticket while a draw happens
     error CLVRFExample_NotAbleToBuyTicketsDuringADraw();
-    ///@notice error emitted when an user tries to claim a not finished draw
+    ///@notice error emitted when a user tries to claim a not-finished draw
     error CLVRFExample_WinnerNotSelectedYet(uint256 requestId, address winner);
-    ///@notice error emitted when a withdraw Fails
+    ///@notice error emitted when a withdrawal fails
     error CLVRFExample_WithdrawFailed(bytes data);
-    ///@notice error emitted when an user tries to double claim draw prize
+    ///@notice error emitted when a user tries to double claim a draw prize
     error CLVRFExample_PrizeAlreadyPaid(uint256 requestId);
 
     /*///////////////////////////////////
@@ -208,7 +208,7 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
 
     /**
         *@notice function for winners to withdraw their prizes
-        *@param _requestId the draw Id to be claimed
+        *@param _requestId the draw ID to be claimed
         *@dev anyone can call the function, but the winner must receive the prize amount
     */
     function winnerWithdraw(uint256 _requestId) external {
@@ -230,9 +230,9 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
                 internal
     ///////////////////////////////////*/
     /**
-        *@notice standard internal function for requests fulfillment
+        *@notice standard internal function for request fulfillment
         *@param _requestId the request to be fulfilled
-        *@param _randomWords the array with the amount of numbers requested
+        *@param _randomWords the array with the number of words requested
     */
     function fulfillRandomWords(uint256 _requestId, uint256[] calldata _randomWords) internal override {
         RequestStatus storage request = s_requests[_requestId];
@@ -253,7 +253,7 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
     ///////////////////////////////////*/
     /**
         *@notice getter function to return a specific request status
-        *@param _requestId the request Id to be returned
+        *@param _requestId the request ID to be returned
         *@return request_ the whole RequestStatus structure
     */
     function getRequestStatus(
