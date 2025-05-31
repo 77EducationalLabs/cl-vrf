@@ -5,15 +5,11 @@ pragma solidity 0.8.26;
             Imports
 ///////////////////////////////////*/
 import { VRFConsumerBaseV2Plus } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
-import { VRFV2PlusClient } from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
-
-/*///////////////////////////////////
-            Interfaces
-///////////////////////////////////*/
 
 /*///////////////////////////////////
             Libraries
 ///////////////////////////////////*/
+import { VRFV2PlusClient } from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
 
 /**
     *@title CL VRF Example
@@ -97,13 +93,9 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
     ///@notice error emitted when a user tries to double claim a draw prize
     error CLVRFExample_PrizeAlreadyPaid(uint256 requestId);
 
-    /*///////////////////////////////////
-                Modifiers
-    ///////////////////////////////////*/
-
-    /*///////////////////////////////////
-                Functions
-    ///////////////////////////////////*/
+    /*//////////////////////////////////////////////////
+                        Functions
+    //////////////////////////////////////////////////*/
 
     /*///////////////////////////////////
                 constructor
@@ -120,10 +112,6 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
         i_keyHash = _keyHash;
         i_subscriptionId = _subId;
     }
-
-    /*///////////////////////////////////
-            Receive&Fallback
-    ///////////////////////////////////*/
 
     /*///////////////////////////////////
                 external
@@ -224,10 +212,6 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
     }
 
     /*///////////////////////////////////
-                public
-    ///////////////////////////////////*/
-
-    /*///////////////////////////////////
                 internal
     ///////////////////////////////////*/
     /**
@@ -244,10 +228,6 @@ contract CLVRFExample is VRFConsumerBaseV2Plus {
 
         emit CLVRFExample_RequestFulfilled(_requestId, _randomWords[0]);
     }
-
-    /*///////////////////////////////////
-                private
-    ///////////////////////////////////*/
 
     /*///////////////////////////////////
             View & Pure
