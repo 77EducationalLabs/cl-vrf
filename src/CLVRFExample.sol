@@ -21,7 +21,7 @@ import { VRFV2PlusClient } from "@chainlink/contracts/src/v0.8/vrf/dev/libraries
     *@notice Created to be used on the Chainlink Introduction Course
     *@author i3arba - 77 Educational Labs
     *@dev Do not use this contract in production
-          This contract has intentional bugs and may have non-intentional also
+          This contract has intentional bugs and may also have non-intentional ones
 */
 contract CLVRFExample is VRFConsumerBaseV2Plus {
 
